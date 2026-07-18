@@ -1,0 +1,150 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    var(--hero-start, #020617) 0%,
+    var(--hero-mid, #0c4a6e) 45%,
+    var(--hero-end, #082f49) 100%
+  );
+}
+
+.gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 20% 30%,
+      color-mix(in oklab, var(--accent, #38bdf8) 22%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 80% 70%,
+      color-mix(in oklab, var(--accent-2, #22d3ee) 18%, transparent),
+      transparent 55%
+    );
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.08) translate(-2%, 1%);
+    opacity: 1;
+  }
+}
+
+.threeLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    color-mix(in oklab, var(--hero-start, #020617) 75%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem;
+  text-align: center;
+  max-width: 56rem;
+}
+
+.greeting {
+  font-family: var(--font-geist-mono, monospace);
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--accent, #38bdf8);
+}
+
+.name {
+  font-size: clamp(2.75rem, 10vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: var(--text-primary, #f8fafc);
+}
+
+.role {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 70%, transparent);
+}
+
+.tagline {
+  margin-top: 0.5rem;
+  max-width: 36rem;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 55%, transparent);
+}
+
+.scrollHint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  border: none;
+  background: transparent;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 60%, transparent);
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.scrollHint:hover {
+  color: var(--accent, #38bdf8);
+}
+
+.scrollLine {
+  width: 1px;
+  height: 3rem;
+  background: linear-gradient(
+    to bottom,
+    var(--accent, #38bdf8),
+    transparent
+  );
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}

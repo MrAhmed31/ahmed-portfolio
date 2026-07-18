@@ -1,0 +1,199 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: clamp(5rem, 10vh, 7rem) clamp(1.25rem, 4vw, 3rem);
+  background: linear-gradient(
+    180deg,
+    var(--hero-start, #020617) 0%,
+    color-mix(in oklab, var(--hero-end, #082f49) 50%, var(--hero-start, #020617)) 100%
+  );
+}
+
+.inner {
+  width: 100%;
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent, #38bdf8);
+}
+
+.title {
+  margin-top: 0.65rem;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary, #f8fafc);
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.4rem;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--accent, #38bdf8),
+    transparent
+  );
+}
+
+.item {
+  position: relative;
+  padding-left: 2rem;
+  padding-bottom: 1.75rem;
+}
+
+.item:last-child {
+  padding-bottom: 0;
+}
+
+.dot {
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 2px solid var(--accent, #38bdf8);
+  background: var(--hero-start, #020617);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--accent, #38bdf8) 50%, transparent);
+}
+
+.card {
+  padding: 1.25rem 1.35rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--text-primary, #f8fafc) 10%, transparent);
+  background: color-mix(in oklab, var(--surface-2, #1e293b) 40%, transparent);
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+@media (hover: hover) {
+  .item:hover .card {
+    border-color: color-mix(in oklab, var(--accent, #38bdf8) 35%, transparent);
+    transform: translateX(6px);
+    box-shadow: 0 12px 32px color-mix(in oklab, var(--hero-start, #020617) 50%, transparent);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.role {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+}
+
+.period {
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--accent, #38bdf8);
+}
+
+.companyRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 65%, transparent);
+}
+
+.companyShort {
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 45%, transparent);
+}
+
+.desc {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 55%, transparent);
+}
+
+.bullets {
+  margin-top: 0.75rem;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.45s ease,
+    opacity 0.35s ease,
+    margin-top 0.35s ease;
+}
+
+@media (hover: hover) {
+  .item:hover .bullets {
+    max-height: 12rem;
+    opacity: 1;
+    margin-top: 0.85rem;
+  }
+}
+
+@media (hover: none) {
+  .bullets {
+    max-height: none;
+    opacity: 1;
+    margin-top: 0.85rem;
+  }
+}
+
+.bullet {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 60%, transparent);
+}
+
+.tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.techTag {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--text-primary, #f8fafc) 10%, transparent);
+  font-size: 0.68rem;
+  color: color-mix(in oklab, var(--text-primary, #f8fafc) 70%, transparent);
+}

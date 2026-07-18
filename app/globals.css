@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
+/* Theme derived from intro video: charcoal desk + amber lamps + cyan monitors */
 :root {
-  --hero-start: #071525;
-  --hero-mid: #0b3a5c;
-  --hero-end: #0ea5e9;
-  --accent: #22d3ee;
+  --hero-start: #0a0a0b;
+  --hero-mid: #16120e;
+  --hero-end: #1a1410;
+  --accent: #f5a623;
   --accent-2: #38bdf8;
-  --accent-hover: #06b6d4;
-  --text-primary: #e8f4ff;
-  --text-muted: #93c5d8;
-  --text-on-dark: #f8fafc;
-  --surface-white: #f4f8fc;
-  --surface-black: #020617;
-  --surface-card: rgba(8, 25, 42, 0.55);
-  --status-available: #22c55e;
-  --navbar-text: #e8f4ff;
-  --email-btn-bg: #ffffff;
-  --email-btn-text: #071525;
-  --background: #020617;
-  --foreground: #e8f4ff;
-  --border-glass: rgba(148, 163, 184, 0.22);
-  --hero-name-size: clamp(3.5rem, 12vw, 10rem);
+  --accent-hover: #e09010;
+  --text-primary: #f3f0ea;
+  --text-muted: #b8aea0;
+  --text-on-dark: #faf7f2;
+  --surface-white: #f7f3ec;
+  --surface-black: #0a0a0b;
+  --surface-card: rgba(22, 18, 14, 0.72);
+  --status-available: #4ade80;
+  --navbar-text: #f3f0ea;
+  --email-btn-bg: #f5a623;
+  --email-btn-text: #0a0a0b;
+  --background: #0a0a0b;
+  --foreground: #f3f0ea;
+  --border-glass: rgba(245, 166, 35, 0.18);
+  --glow-warm: rgba(245, 166, 35, 0.28);
+  --glow-cool: rgba(56, 189, 248, 0.22);
+  --hero-name-size: clamp(3.2rem, 11vw, 9.5rem);
   --text-body: clamp(0.9rem, 1.2vw, 1.05rem);
   --text-small: 0.72rem;
   --radius: 1rem;
@@ -28,24 +31,26 @@
 }
 
 :root[data-theme="light"] {
-  --hero-start: #e0f2fe;
-  --hero-mid: #bae6fd;
-  --hero-end: #0284c7;
-  --accent: #0284c7;
-  --accent-2: #0ea5e9;
-  --accent-hover: #0369a1;
-  --text-primary: #0f172a;
-  --text-muted: #334155;
-  --text-on-dark: #f8fafc;
+  --hero-start: #f7f3ec;
+  --hero-mid: #efe6d8;
+  --hero-end: #e8dcc8;
+  --accent: #c47a0a;
+  --accent-2: #0284c7;
+  --accent-hover: #a36608;
+  --text-primary: #171412;
+  --text-muted: #5c534a;
+  --text-on-dark: #faf7f2;
   --surface-white: #ffffff;
-  --surface-black: #f1f5f9;
-  --surface-card: rgba(255, 255, 255, 0.72);
-  --navbar-text: #0f172a;
-  --email-btn-bg: #0f172a;
-  --email-btn-text: #ffffff;
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --border-glass: rgba(15, 23, 42, 0.12);
+  --surface-black: #efe9df;
+  --surface-card: rgba(255, 255, 255, 0.78);
+  --navbar-text: #171412;
+  --email-btn-bg: #171412;
+  --email-btn-text: #faf7f2;
+  --background: #f7f3ec;
+  --foreground: #171412;
+  --border-glass: rgba(23, 20, 18, 0.12);
+  --glow-warm: rgba(196, 122, 10, 0.18);
+  --glow-cool: rgba(2, 132, 199, 0.14);
   color-scheme: light;
 }
 
@@ -67,6 +72,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 main::-webkit-scrollbar {
@@ -76,16 +83,23 @@ main::-webkit-scrollbar {
 main {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--accent) 40%, transparent);
+  background: color-mix(in oklab, var(--accent) 45%, transparent);
   color: var(--text-on-dark);
 }
 
 a,
 button {
   cursor: none;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 @media (hover: none) {
@@ -97,7 +111,7 @@ button {
 
 @media (max-width: 767px) {
   :root {
-    --hero-name-size: clamp(2.6rem, 14vw, 4.5rem);
+    --hero-name-size: clamp(2.4rem, 13vw, 4.2rem);
   }
 
   html,

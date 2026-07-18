@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -19,13 +19,14 @@ function scrollNext() {
   if (!main) return;
   gsap.to(main, {
     scrollTop: window.innerHeight,
-    duration: 1,
+    duration: 0.9,
     ease: "power3.inOut",
   });
 }
 
 export default function VideoIntro() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const greetRef = useRef<HTMLParagraphElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const roleRef = useRef<HTMLParagraphElement>(null);
@@ -36,32 +37,38 @@ export default function VideoIntro() {
   const [playing, setPlaying] = useState(true);
   const [showHint, setShowHint] = useState(true);
   const isMobile = useMediaQuery("(max-width: 767px)");
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [hasVideo, setHasVideo] = useState(true);
   const [enableThree, setEnableThree] = useState(false);
 
+  const videoSrc = useMemo(
+    () => (isMobile ? "/assets/about-me-mobile.mp4" : "/assets/about-me.mp4"),
+    [isMobile],
+  );
+
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.35 });
+    const tl = gsap.timeline({ delay: 0.3 });
     tl.fromTo(
       greetRef.current,
-      { opacity: 0, y: -18 },
-      { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+      { opacity: 0, y: -16 },
+      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
     )
       .fromTo(
         nameRef.current,
-        { opacity: 0, x: -60 },
-        { opacity: 1, x: 0, duration: 0.85, ease: "power3.out" },
+        { opacity: 0, x: -48 },
+        { opacity: 1, x: 0, duration: 0.75, ease: "power3.out" },
         "-=0.2",
       )
       .fromTo(
         roleRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
-        "-=0.4",
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+        "-=0.35",
       )
       .fromTo(
         scrollRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.45 },
+        { opacity: 1, duration: 0.4 },
         "-=0.1",
       );
     return () => {
@@ -76,26 +83,25 @@ export default function VideoIntro() {
     const t = gsap.fromTo(
       v,
       { opacity: 0 },
-      { opacity: 1, duration: 1.1, ease: "power2.out" },
+      { opacity: 1, duration: 0.9, ease: "power2.out" },
     );
     return () => {
       t.kill();
     };
-  }, [hasVideo]);
+  }, [hasVideo, videoSrc]);
 
   useEffect(() => {
     function onLoaderDismissed() {
       const v = videoRef.current;
-      if (v) {
-        // Keep muted until user taps — silent cinematic clip by default
-        v.play().catch(() => undefined);
+      if (v) v.play().catch(() => undefined);
+      if (!isMobile && !reduceMotion) {
+        window.setTimeout(() => setEnableThree(true), 500);
       }
-      window.setTimeout(() => setEnableThree(true), 350);
     }
     window.addEventListener("loader-dismissed", onLoaderDismissed);
     return () =>
       window.removeEventListener("loader-dismissed", onLoaderDismissed);
-  }, []);
+  }, [isMobile, reduceMotion]);
 
   useEffect(() => {
     function onAnimationDone() {
@@ -108,6 +114,26 @@ export default function VideoIntro() {
       window.removeEventListener("loader-animation-done", onAnimationDone);
   }, []);
 
+  // Pause video when off-screen to save battery/CPU
+  useEffect(() => {
+    const section = sectionRef.current;
+    const v = videoRef.current;
+    if (!section || !v) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (playing) v.play().catch(() => undefined);
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, [playing, hasVideo]);
+
   const dismissHint = useCallback(() => {
     if (!hintRef.current) {
       setShowHint(false);
@@ -116,14 +142,14 @@ export default function VideoIntro() {
     gsap.to(hintRef.current, {
       opacity: 0,
       y: -8,
-      duration: 0.3,
+      duration: 0.28,
       onComplete: () => setShowHint(false),
     });
   }, []);
 
   useEffect(() => {
     if (!showHint) return;
-    const id = window.setTimeout(() => dismissHint(), 6000);
+    const id = window.setTimeout(() => dismissHint(), 7000);
     return () => window.clearTimeout(id);
   }, [showHint, dismissHint]);
 
@@ -149,11 +175,15 @@ export default function VideoIntro() {
 
   function handleEnded() {
     const main = document.querySelector("main");
-    if (main && main.scrollTop < window.innerHeight * 0.4) scrollNext();
+    if (main && main.scrollTop < window.innerHeight * 0.35) scrollNext();
   }
 
   return (
-    <section className={styles.section} aria-label="Cinematic intro">
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      aria-label="Cinematic intro"
+    >
       {hasVideo ? (
         <>
           {!isMobile && (
@@ -169,8 +199,9 @@ export default function VideoIntro() {
             />
           )}
           <video
+            key={videoSrc}
             ref={videoRef}
-            src="/assets/about-me.mp4"
+            src={videoSrc}
             muted
             playsInline
             loop

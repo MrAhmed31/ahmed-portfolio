@@ -152,7 +152,7 @@
   height: 55%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in oklab, var(--accent, #38bdf8) 55%, transparent),
+    color-mix(in oklab, var(--accent, #f5a623) 50%, transparent),
     transparent 70%
   );
   pointer-events: none;

@@ -41,7 +41,7 @@ export default function CinematicLayer() {
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      color: new THREE.Color("#38bdf8"),
+      color: new THREE.Color("#f5a623"),
       size: 0.07,
       transparent: true,
       opacity: 0.7,

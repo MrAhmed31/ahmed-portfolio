@@ -117,22 +117,6 @@ export default function Home() {
       });
     }
 
-    function onWheel(e: WheelEvent) {
-      e.preventDefault();
-      if (busyRef.current) return;
-      goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
-    }
-
-    let touchY = 0;
-    function onTouchStart(e: TouchEvent) {
-      touchY = e.touches[0].clientY;
-    }
-    function onTouchEnd(e: TouchEvent) {
-      const dy = touchY - e.changedTouches[0].clientY;
-      if (Math.abs(dy) < 40 || busyRef.current) return;
-      goTo(idxRef.current + (dy > 0 ? 1 : -1));
-    }
-
     function onScroll() {
       idxRef.current = Math.round(el!.scrollTop / window.innerHeight);
     }
@@ -144,9 +128,41 @@ export default function Home() {
 
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
-    el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("footer-loop-back", onFooterLoop);
 
+    if (!isMobile) {
+      function onWheel(e: WheelEvent) {
+        e.preventDefault();
+        if (busyRef.current) return;
+        goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
+      }
+
+      let touchY = 0;
+      function onTouchStart(e: TouchEvent) {
+        touchY = e.touches[0].clientY;
+      }
+      function onTouchEnd(e: TouchEvent) {
+        const dy = touchY - e.changedTouches[0].clientY;
+        if (Math.abs(dy) < 40 || busyRef.current) return;
+        goTo(idxRef.current + (dy > 0 ? 1 : -1));
+      }
+
+      el.addEventListener("wheel", onWheel, { passive: false });
+      el.addEventListener("touchstart", onTouchStart, { passive: true });
+      el.addEventListener("touchend", onTouchEnd, { passive: true });
+
+      return () => {
+        el.removeEventListener("wheel", onWheel);
+        el.removeEventListener("scroll", onScroll);
+        el.removeEventListener("touchstart", onTouchStart);
+        el.removeEventListener("touchend", onTouchEnd);
+        window.removeEventListener("footer-loop-back", onFooterLoop);
+        tweenRef.current?.kill();
+      };
+    }
+
+    // Mobile: native scroll for better responsiveness
     let mTouchY = 0;
     function onMobileTouchStart(e: TouchEvent) {
       mTouchY = e.touches[0].clientY;
@@ -162,25 +178,13 @@ export default function Home() {
       }
     }
 
-    if (!isMobile) {
-      el.addEventListener("touchstart", onTouchStart, { passive: true });
-      el.addEventListener("touchend", onTouchEnd, { passive: true });
-    } else {
-      el.addEventListener("touchstart", onMobileTouchStart, { passive: true });
-      el.addEventListener("touchend", onMobileTouchEnd, { passive: true });
-    }
-    window.addEventListener("footer-loop-back", onFooterLoop);
+    el.addEventListener("touchstart", onMobileTouchStart, { passive: true });
+    el.addEventListener("touchend", onMobileTouchEnd, { passive: true });
 
     return () => {
-      el.removeEventListener("wheel", onWheel);
       el.removeEventListener("scroll", onScroll);
-      if (!isMobile) {
-        el.removeEventListener("touchstart", onTouchStart);
-        el.removeEventListener("touchend", onTouchEnd);
-      } else {
-        el.removeEventListener("touchstart", onMobileTouchStart);
-        el.removeEventListener("touchend", onMobileTouchEnd);
-      }
+      el.removeEventListener("touchstart", onMobileTouchStart);
+      el.removeEventListener("touchend", onMobileTouchEnd);
       window.removeEventListener("footer-loop-back", onFooterLoop);
       tweenRef.current?.kill();
     };

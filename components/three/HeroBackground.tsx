@@ -18,9 +18,9 @@ function makeSprite() {
 }
 
 const PALETTE = [
-  new THREE.Color("#e0f2fe"),
-  new THREE.Color("#7dd3fc"),
+  new THREE.Color("#f5a623"),
   new THREE.Color("#38bdf8"),
+  new THREE.Color("#ffe0a3"),
 ];
 
 export default function HeroBackground() {

@@ -3,7 +3,7 @@
   height: 100vh;
   height: 100svh;
   z-index: 1;
-  background: #050505;
+  background: #0a0a0b;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -14,9 +14,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(28px);
+  object-position: center 30%;
+  filter: blur(28px) saturate(1.05);
   transform: scale(1.12);
-  opacity: 0.5;
+  opacity: 0.55;
 }
 
 .mainVideo {
@@ -25,6 +26,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 28%;
   z-index: 1;
   opacity: 0;
 }
@@ -33,29 +35,26 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(14, 165, 233, 0.35), transparent 45%),
-    radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.2), transparent 40%),
-    #050505;
+  background: #0a0a0b;
   overflow: hidden;
 }
 
 .portraitImage {
   position: absolute;
-  inset: -8%;
-  width: 116%;
-  height: 116%;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
   object-fit: cover;
+  object-position: center 20%;
   animation: kenBurns 18s ease-in-out infinite alternate;
-  filter: saturate(1.05) contrast(1.05);
 }
 
 @keyframes kenBurns {
   0% {
-    transform: scale(1.05) translate(0, 0);
+    transform: scale(1.04) translate(0, 0);
   }
   100% {
-    transform: scale(1.18) translate(-2%, -1%);
+    transform: scale(1.14) translate(-1.5%, -1%);
   }
 }
 
@@ -63,12 +62,23 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.78) 0%,
-    rgba(0, 0, 0, 0.28) 48%,
-    rgba(2, 18, 34, 0.72) 100%
-  );
+  background:
+    linear-gradient(
+      115deg,
+      rgba(10, 10, 11, 0.82) 0%,
+      rgba(10, 10, 11, 0.28) 48%,
+      rgba(26, 18, 10, 0.55) 100%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 75% 20%,
+      rgba(245, 166, 35, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 20% 80%,
+      rgba(56, 189, 248, 0.12),
+      transparent 55%
+    );
   pointer-events: none;
 }
 
@@ -79,8 +89,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 4rem;
+  padding: 0 clamp(1.25rem, 5vw, 4rem);
   pointer-events: none;
+  max-width: 52rem;
 }
 
 .eyebrow {
@@ -91,24 +102,27 @@
   color: var(--accent);
   margin-bottom: 1rem;
   font-family: var(--font-geist-mono), monospace;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .name {
   font-family: var(--font-syne), sans-serif;
-  font-size: clamp(3.5rem, 7.5vw, 8rem);
+  font-size: clamp(3rem, 7.5vw, 7.5rem);
   font-weight: 800;
   color: #fff;
-  line-height: 0.88;
-  letter-spacing: -0.02em;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
 }
 
 .role {
-  font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+  font-size: clamp(0.72rem, 1.1vw, 0.95rem);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.68);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 1.25rem;
+  margin-top: 1.15rem;
+  max-width: 34rem;
 }
 
 .playOverlay {
@@ -118,14 +132,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(0, 0, 0, 0.35);
   border: none;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .playOverlay:hover {
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.48);
 }
 
 .soundHint {
@@ -136,16 +150,18 @@
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   user-select: none;
-  background: transparent;
-  border: none;
+  background: rgba(10, 10, 11, 0.35);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
   cursor: pointer;
-  padding: 0;
+  padding: 0.55rem 0.9rem;
 }
 
 .soundPulse {
@@ -191,25 +207,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 10, 11, 0.45);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.88);
   cursor: pointer;
   transition:
     background 0.2s,
     border-color 0.2s,
-    color 0.2s;
+    color 0.2s,
+    transform 0.2s;
 }
 
 .ctrlBtn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(245, 166, 35, 0.2);
+  border-color: rgba(245, 166, 35, 0.55);
   color: #fff;
+  transform: translateY(-2px);
 }
 
 .scrollCue {
@@ -222,7 +240,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   transition: color 0.2s;
   border: none;
@@ -231,7 +249,7 @@
 }
 
 .scrollCue:hover {
-  color: #fff;
+  color: var(--accent);
 }
 
 .scrollLabel {
@@ -266,25 +284,46 @@
 
 @media (max-width: 767px) {
   .heroContent {
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
+    justify-content: flex-end;
+    padding-bottom: 7.5rem;
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 11, 0.88) 0%,
+      rgba(10, 10, 11, 0.35) 55%,
+      transparent 100%
+    );
+    max-width: none;
   }
 
   .name {
-    font-size: clamp(2.8rem, 11vw, 5rem);
+    font-size: clamp(2.6rem, 12vw, 4.2rem);
+  }
+
+  .role {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .mainVideo,
+  .bgVideo {
+    object-position: center 22%;
   }
 
   .controls {
-    bottom: 1.5rem;
-    right: 1rem;
+    bottom: 1.25rem;
+    right: 0.85rem;
   }
 
   .scrollCue {
-    bottom: 1.5rem;
+    bottom: 1.25rem;
   }
 
   .soundHint {
-    bottom: 4.5rem;
-    right: 1rem;
+    bottom: 4.4rem;
+    right: 0.85rem;
+    font-size: 0.58rem;
+    padding: 0.45rem 0.75rem;
   }
 
   .bgVideo {

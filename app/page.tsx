@@ -1,18 +1,38 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import AboutSection from "@/components/sections/AboutSection";
-import ContactSection from "@/components/sections/ContactSection";
-import HeroSection from "@/components/sections/HeroSection";
-import ProjectsSection from "@/components/sections/ProjectsSection";
 import ScreenLoader from "@/components/sections/ScreenLoader";
-import SkillsSection from "@/components/sections/SkillsSection";
 import VideoIntro from "@/components/sections/VideoIntro";
-import WorkExperienceSection from "@/components/sections/WorkExperienceSection";
 import Navbar from "@/components/ui/Navbar";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import { profile } from "@/data/profile";
 import { gsap } from "@/lib/gsap";
+
+const HeroSection = dynamic(() => import("@/components/sections/HeroSection"), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: "100vh" }} />,
+});
+const AboutSection = dynamic(
+  () => import("@/components/sections/AboutSection"),
+  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+);
+const SkillsSection = dynamic(
+  () => import("@/components/sections/SkillsSection"),
+  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+);
+const ProjectsSection = dynamic(
+  () => import("@/components/sections/ProjectsSection"),
+  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+);
+const WorkExperienceSection = dynamic(
+  () => import("@/components/sections/WorkExperienceSection"),
+  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+);
+const ContactSection = dynamic(
+  () => import("@/components/sections/ContactSection"),
+  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+);
 
 const PROJECT_SLIDES = profile.projects.length;
 const TOTAL = 6 + PROJECT_SLIDES;
@@ -24,6 +44,20 @@ export default function Home() {
   const tweenRef = useRef<ReturnType<typeof gsap.to> | null>(null);
   const loopOverlayRef = useRef<HTMLDivElement>(null);
   const [showLoader, setShowLoader] = useState(true);
+  const [readySections, setReadySections] = useState(false);
+
+  useEffect(() => {
+    function unlock() {
+      setReadySections(true);
+    }
+    window.addEventListener("loader-animation-done", unlock);
+    // Failsafe if loader skipped
+    const id = window.setTimeout(unlock, 8000);
+    return () => {
+      window.removeEventListener("loader-animation-done", unlock);
+      window.clearTimeout(id);
+    };
+  }, []);
 
   useEffect(() => {
     const el = mainRef.current;
@@ -34,20 +68,19 @@ export default function Home() {
       tweenRef.current?.kill();
       gsap.to(loopOverlayRef.current, {
         opacity: 1,
-        duration: 0.55,
+        duration: 0.4,
         ease: "power2.in",
         onComplete: () => {
           el!.scrollTop = targetScrollTop;
           idxRef.current = targetIdx;
           gsap.to(loopOverlayRef.current, {
             opacity: 0,
-            duration: 0.7,
+            duration: 0.5,
             ease: "power2.out",
-            delay: 0.05,
             onComplete: () => {
               window.setTimeout(() => {
                 busyRef.current = false;
-              }, 300);
+              }, 180);
             },
           });
         },
@@ -74,12 +107,12 @@ export default function Home() {
       tweenRef.current?.kill();
       tweenRef.current = gsap.to(el, {
         scrollTop: idx * window.innerHeight,
-        duration: 1,
+        duration: 0.85,
         ease: "power3.inOut",
         onComplete: () => {
           window.setTimeout(() => {
             busyRef.current = false;
-          }, 500);
+          }, 280);
         },
       });
     }
@@ -172,12 +205,16 @@ export default function Home() {
         style={{ height: "100vh" }}
       >
         <VideoIntro />
-        <HeroSection />
-        <AboutSection />
-        <SkillsSection />
-        <ProjectsSection />
-        <WorkExperienceSection />
-        <ContactSection />
+        {readySections && (
+          <>
+            <HeroSection />
+            <AboutSection />
+            <SkillsSection />
+            <ProjectsSection />
+            <WorkExperienceSection />
+            <ContactSection />
+          </>
+        )}
       </main>
     </>
   );

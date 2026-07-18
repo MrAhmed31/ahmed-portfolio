@@ -11,7 +11,7 @@ import styles from "@/styles/sections/HeroSection.module.css";
 
 const HeroBackground = dynamic(
   () => import("@/components/three/HeroBackground"),
-  { ssr: false },
+  { ssr: false, loading: () => null },
 );
 
 const PROJECTS_SECTION_INDEX = 4;

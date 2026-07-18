@@ -1,102 +1,326 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
 import styles from "@/styles/sections/VideoIntro.module.css";
 
 const CinematicLayer = dynamic(
   () => import("@/components/three/CinematicLayer"),
-  { ssr: false },
+  { ssr: false, loading: () => null },
 );
 
-function getMainScroller() {
-  return document.querySelector("main");
+function scrollNext() {
+  const main = document.querySelector("main");
+  if (!main) return;
+  gsap.to(main, {
+    scrollTop: window.innerHeight,
+    duration: 1,
+    ease: "power3.inOut",
+  });
 }
 
 export default function VideoIntro() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const greetingRef = useRef<HTMLParagraphElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const greetRef = useRef<HTMLParagraphElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const roleRef = useRef<HTMLParagraphElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const scrollRef = useRef<HTMLButtonElement>(null);
   const hintRef = useRef<HTMLButtonElement>(null);
 
+  const [muted, setMuted] = useState(true);
+  const [playing, setPlaying] = useState(true);
+  const [showHint, setShowHint] = useState(true);
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [hasVideo, setHasVideo] = useState(true);
+  const [enableThree, setEnableThree] = useState(false);
+
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      tl.from(greetingRef.current, { opacity: 0, y: 24, duration: 0.7 })
-        .from(
-          nameRef.current,
-          { opacity: 0, y: 40, duration: 0.9 },
-          "-=0.4",
-        )
-        .from(
-          roleRef.current,
-          { opacity: 0, y: 24, duration: 0.7 },
-          "-=0.5",
-        )
-        .from(
-          taglineRef.current,
-          { opacity: 0, y: 20, duration: 0.7 },
-          "-=0.45",
-        )
-        .from(
-          hintRef.current,
-          { opacity: 0, y: 16, duration: 0.6 },
-          "-=0.3",
-        );
-    }, sectionRef);
-
-    return () => ctx.revert();
+    const tl = gsap.timeline({ delay: 0.35 });
+    tl.fromTo(
+      greetRef.current,
+      { opacity: 0, y: -18 },
+      { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+    )
+      .fromTo(
+        nameRef.current,
+        { opacity: 0, x: -60 },
+        { opacity: 1, x: 0, duration: 0.85, ease: "power3.out" },
+        "-=0.2",
+      )
+      .fromTo(
+        roleRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+        "-=0.4",
+      )
+      .fromTo(
+        scrollRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.45 },
+        "-=0.1",
+      );
+    return () => {
+      tl.kill();
+    };
   }, []);
 
-  const scrollToNext = useCallback(() => {
-    const main = getMainScroller();
-    if (!main) return;
-    gsap.to(main, {
-      scrollTop: window.innerHeight,
-      duration: 1.2,
-      ease: "power3.inOut",
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    const t = gsap.fromTo(
+      v,
+      { opacity: 0 },
+      { opacity: 1, duration: 1.1, ease: "power2.out" },
+    );
+    return () => {
+      t.kill();
+    };
+  }, [hasVideo]);
+
+  useEffect(() => {
+    function onLoaderDismissed() {
+      const v = videoRef.current;
+      if (v) {
+        // Keep muted until user taps — silent cinematic clip by default
+        v.play().catch(() => undefined);
+      }
+      window.setTimeout(() => setEnableThree(true), 350);
+    }
+    window.addEventListener("loader-dismissed", onLoaderDismissed);
+    return () =>
+      window.removeEventListener("loader-dismissed", onLoaderDismissed);
+  }, []);
+
+  useEffect(() => {
+    function onAnimationDone() {
+      const v = videoRef.current;
+      if (!v) return;
+      v.play().catch(() => undefined);
+    }
+    window.addEventListener("loader-animation-done", onAnimationDone);
+    return () =>
+      window.removeEventListener("loader-animation-done", onAnimationDone);
+  }, []);
+
+  const dismissHint = useCallback(() => {
+    if (!hintRef.current) {
+      setShowHint(false);
+      return;
+    }
+    gsap.to(hintRef.current, {
+      opacity: 0,
+      y: -8,
+      duration: 0.3,
+      onComplete: () => setShowHint(false),
     });
   }, []);
 
-  return (
-    <section ref={sectionRef} className={styles.section} aria-label="Intro">
-      <div className={styles.gradient} aria-hidden />
-      <div className={styles.threeLayer}>
-        <CinematicLayer />
-      </div>
-      <div className={styles.vignette} aria-hidden />
+  useEffect(() => {
+    if (!showHint) return;
+    const id = window.setTimeout(() => dismissHint(), 6000);
+    return () => window.clearTimeout(id);
+  }, [showHint, dismissHint]);
 
-      <div ref={innerRef} className={styles.inner}>
-        <p ref={greetingRef} className={styles.greeting}>
-          {content.intro.greeting}
+  function togglePlay() {
+    const v = videoRef.current;
+    if (!v) return;
+    if (playing) {
+      v.pause();
+      setPlaying(false);
+    } else {
+      v.play().catch(() => undefined);
+      setPlaying(true);
+    }
+  }
+
+  function toggleMute() {
+    if (showHint) dismissHint();
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+  }
+
+  function handleEnded() {
+    const main = document.querySelector("main");
+    if (main && main.scrollTop < window.innerHeight * 0.4) scrollNext();
+  }
+
+  return (
+    <section className={styles.section} aria-label="Cinematic intro">
+      {hasVideo ? (
+        <>
+          {!isMobile && (
+            <video
+              src="/assets/ambient.mp4"
+              autoPlay
+              muted
+              playsInline
+              loop
+              preload="none"
+              aria-hidden
+              className={styles.bgVideo}
+            />
+          )}
+          <video
+            ref={videoRef}
+            src="/assets/about-me.mp4"
+            muted
+            playsInline
+            loop
+            preload="metadata"
+            poster="/assets/intro-poster.jpg"
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onEnded={handleEnded}
+            onError={() => setHasVideo(false)}
+            className={styles.mainVideo}
+          />
+        </>
+      ) : (
+        <div className={styles.portraitFallback} aria-hidden>
+          <Image
+            src={profile.image}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className={styles.portraitImage}
+          />
+        </div>
+      )}
+
+      <div className={styles.overlay} />
+
+      {!isMobile && enableThree && <CinematicLayer />}
+
+      <div className={styles.heroContent}>
+        <p ref={greetRef} className={styles.eyebrow}>
+          {content.site.tagline}
         </p>
         <h1 ref={nameRef} className={styles.name}>
-          {profile.name.full}
+          {profile.name.first}
+          <br />
+          {profile.name.last}
         </h1>
         <p ref={roleRef} className={styles.role}>
           {profile.roles.detailed}
         </p>
-        <p ref={taglineRef} className={styles.tagline}>
-          {profile.tagline}
-        </p>
       </div>
 
+      {!playing && hasVideo && (
+        <button
+          type="button"
+          className={styles.playOverlay}
+          onClick={togglePlay}
+          aria-label="Play video"
+        >
+          <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+            <circle
+              cx="36"
+              cy="36"
+              r="35"
+              stroke="rgba(255,255,255,0.55)"
+              strokeWidth="1.5"
+            />
+            <polygon points="29,20 56,36 29,52" fill="white" />
+          </svg>
+        </button>
+      )}
+
+      {showHint && hasVideo && (
+        <button
+          ref={hintRef}
+          type="button"
+          className={styles.soundHint}
+          onClick={toggleMute}
+        >
+          <span className={styles.soundPulse} />
+          <span>Tap for sound</span>
+        </button>
+      )}
+
+      {hasVideo && (
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={styles.ctrlBtn}
+            onClick={togglePlay}
+            aria-label={playing ? "Pause" : "Play"}
+          >
+            {playing ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <rect x="2" y="1" width="4" height="12" rx="1" />
+                <rect x="8" y="1" width="4" height="12" rx="1" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <polygon points="2,1 13,7 2,13" />
+              </svg>
+            )}
+          </button>
+          <button
+            type="button"
+            className={styles.ctrlBtn}
+            onClick={toggleMute}
+            aria-label={muted ? "Unmute" : "Mute"}
+          >
+            {muted ? (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              >
+                <path
+                  d="M2 5.5h2.5L8 3v10l-3.5-2.5H2V5.5z"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <line x1="10" y1="5" x2="14" y2="11" />
+                <line x1="14" y1="5" x2="10" y2="11" />
+              </svg>
+            ) : (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              >
+                <path
+                  d="M2 5.5h2.5L8 3v10l-3.5-2.5H2V5.5z"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <path d="M10.5 5.5C11.8 6.5 12.5 7.2 12.5 8s-.7 1.5-2 2.5" />
+                <path d="M12 3.5C14 5 15 6.4 15 8s-1 3-3 4.5" />
+              </svg>
+            )}
+          </button>
+        </div>
+      )}
+
       <button
-        ref={hintRef}
+        ref={scrollRef}
         type="button"
-        className={styles.scrollHint}
-        onClick={scrollToNext}
-        aria-label={content.intro.scrollHint}
+        className={styles.scrollCue}
+        onClick={scrollNext}
+        aria-label="Scroll to next section"
       >
-        <span>{content.intro.scrollHint}</span>
-        <span className={styles.scrollLine} aria-hidden />
+        <span className={styles.scrollLabel}>Scroll</span>
+        <span className={styles.scrollLine} />
       </button>
     </section>
   );

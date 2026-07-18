@@ -23,7 +23,7 @@ export default function CinematicLayer() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(W, H);
     renderer.domElement.style.cssText =
-      "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;";
+      "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;opacity:0.35;mask-image:radial-gradient(ellipse 55% 55% at 50% 42%, transparent 40%, black 85%);-webkit-mask-image:radial-gradient(ellipse 55% 55% at 50% 42%, transparent 40%, black 85%);";
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();

@@ -80,10 +80,11 @@ export default function VideoIntro() {
     const v = videoRef.current;
     if (!v) return;
     v.muted = true;
+    v.style.opacity = "1";
     const t = gsap.fromTo(
       v,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.9, ease: "power2.out" },
+      { opacity: 0.35 },
+      { opacity: 1, duration: 0.55, ease: "power2.out" },
     );
     return () => {
       t.kill();
@@ -229,6 +230,7 @@ export default function VideoIntro() {
 
       <div className={styles.overlay} />
 
+      {/* Keep particles off the face — only a light edge layer on desktop */}
       {!isMobile && enableThree && <CinematicLayer />}
 
       <div className={styles.heroContent}>
@@ -236,12 +238,10 @@ export default function VideoIntro() {
           {content.site.tagline}
         </p>
         <h1 ref={nameRef} className={styles.name}>
-          {profile.name.first}
-          <br />
-          {profile.name.last}
+          {profile.name.full}
         </h1>
         <p ref={roleRef} className={styles.role}>
-          {profile.roles.detailed}
+          {profile.roles.short}
         </p>
       </div>
 

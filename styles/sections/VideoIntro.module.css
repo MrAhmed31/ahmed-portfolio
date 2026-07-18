@@ -14,10 +14,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
-  filter: blur(28px) saturate(1.05);
-  transform: scale(1.12);
-  opacity: 0.55;
+  object-position: center center;
+  filter: blur(32px) saturate(1.05);
+  transform: scale(1.14);
+  opacity: 0.35;
 }
 
 .mainVideo {
@@ -26,7 +26,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 28%;
+  object-position: center center;
   z-index: 1;
   opacity: 0;
 }
@@ -41,88 +41,83 @@
 
 .portraitImage {
   position: absolute;
-  inset: -6%;
-  width: 112%;
-  height: 112%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 20%;
-  animation: kenBurns 18s ease-in-out infinite alternate;
+  object-position: center center;
 }
 
-@keyframes kenBurns {
-  0% {
-    transform: scale(1.04) translate(0, 0);
-  }
-  100% {
-    transform: scale(1.14) translate(-1.5%, -1%);
-  }
-}
-
+/* Soft edge vignette only — center stays clear for the video */
 .overlay {
   position: absolute;
   inset: 0;
   z-index: 2;
   background:
     linear-gradient(
-      115deg,
-      rgba(10, 10, 11, 0.82) 0%,
-      rgba(10, 10, 11, 0.28) 48%,
-      rgba(26, 18, 10, 0.55) 100%
+      to top,
+      rgba(10, 10, 11, 0.55) 0%,
+      transparent 28%
     ),
-    radial-gradient(
-      ellipse 60% 50% at 75% 20%,
-      rgba(245, 166, 35, 0.16),
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 50% 45% at 20% 80%,
-      rgba(56, 189, 248, 0.12),
-      transparent 55%
+    linear-gradient(
+      to bottom,
+      rgba(10, 10, 11, 0.28) 0%,
+      transparent 18%
     );
   pointer-events: none;
 }
 
+/* Compact label tucked to the bottom — does not cover the face */
 .heroContent {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 4;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 0 clamp(1.25rem, 5vw, 4rem);
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  padding: 0 clamp(1.25rem, 4vw, 2.75rem) 5.75rem;
   pointer-events: none;
-  max-width: 52rem;
+  max-width: none;
 }
 
 .eyebrow {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-family: var(--font-geist-mono), monospace;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
 }
 
 .name {
   font-family: var(--font-syne), sans-serif;
-  font-size: clamp(3rem, 7.5vw, 7.5rem);
-  font-weight: 800;
+  font-size: clamp(1.35rem, 2.8vw, 2rem);
+  font-weight: 700;
   color: #fff;
-  line-height: 0.9;
-  letter-spacing: -0.03em;
-  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+.name br {
+  display: none;
 }
 
 .role {
-  font-size: clamp(0.72rem, 1.1vw, 0.95rem);
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.72);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 1.15rem;
-  max-width: 34rem;
+  margin-top: 0.15rem;
+  max-width: 28rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
 }
 
 .playOverlay {
@@ -132,14 +127,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.22);
   border: none;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .playOverlay:hover {
-  background: rgba(0, 0, 0, 0.48);
+  background: rgba(0, 0, 0, 0.32);
 }
 
 .soundHint {
@@ -150,18 +145,18 @@
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   user-select: none;
-  background: rgba(10, 10, 11, 0.35);
+  background: rgba(10, 10, 11, 0.4);
   border: 1px solid rgba(245, 166, 35, 0.35);
   border-radius: 999px;
   backdrop-filter: blur(10px);
   cursor: pointer;
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.85rem;
 }
 
 .soundPulse {
@@ -284,58 +279,54 @@
 
 @media (max-width: 767px) {
   .heroContent {
-    padding: 0 1.25rem;
-    justify-content: flex-end;
-    padding-bottom: 7.5rem;
-    background: linear-gradient(
-      to top,
-      rgba(10, 10, 11, 0.88) 0%,
-      rgba(10, 10, 11, 0.35) 55%,
-      transparent 100%
-    );
-    max-width: none;
+    padding: 0 1.1rem 5.5rem;
+    background: none;
   }
 
   .name {
-    font-size: clamp(2.6rem, 12vw, 4.2rem);
+    font-size: 1.2rem;
   }
 
   .role {
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
   }
 
   .mainVideo,
   .bgVideo {
-    object-position: center 22%;
+    object-position: center center;
   }
 
   .controls {
-    bottom: 1.25rem;
+    bottom: 1.15rem;
     right: 0.85rem;
   }
 
   .scrollCue {
-    bottom: 1.25rem;
+    bottom: 1.15rem;
   }
 
   .soundHint {
-    bottom: 4.4rem;
+    bottom: 4.25rem;
     right: 0.85rem;
-    font-size: 0.58rem;
-    padding: 0.45rem 0.75rem;
+    font-size: 0.55rem;
+    padding: 0.42rem 0.7rem;
   }
 
   .bgVideo {
     display: none;
   }
+
+  .overlay {
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 11, 0.5) 0%,
+      transparent 22%
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portraitImage {
-    animation: none;
-  }
-
   .scrollLine,
   .soundPulse::after {
     animation: none;

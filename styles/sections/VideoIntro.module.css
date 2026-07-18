@@ -8,18 +8,6 @@
   flex-shrink: 0;
 }
 
-.bgVideo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  filter: blur(32px) saturate(1.05);
-  transform: scale(1.14);
-  opacity: 0.35;
-}
-
 .mainVideo {
   position: absolute;
   inset: 0;
@@ -28,7 +16,8 @@
   object-fit: cover;
   object-position: center center;
   z-index: 1;
-  opacity: 0;
+  opacity: 1;
+  background: #0a0a0b;
 }
 
 .portraitFallback {
@@ -292,8 +281,7 @@
     letter-spacing: 0.05em;
   }
 
-  .mainVideo,
-  .bgVideo {
+  .mainVideo {
     object-position: center center;
   }
 
@@ -304,17 +292,6 @@
 
   .scrollCue {
     bottom: 1.15rem;
-  }
-
-  .soundHint {
-    bottom: 4.25rem;
-    right: 0.85rem;
-    font-size: 0.55rem;
-    padding: 0.42rem 0.7rem;
-  }
-
-  .bgVideo {
-    display: none;
   }
 
   .overlay {

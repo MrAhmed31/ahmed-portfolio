@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
@@ -9,11 +8,6 @@ import { content } from "@/data/content";
 import { profile } from "@/data/profile";
 import { gsap } from "@/lib/gsap";
 import styles from "@/styles/sections/HeroSection.module.css";
-
-const HeroBackground = dynamic(
-  () => import("@/components/three/HeroBackground"),
-  { ssr: false, loading: () => null },
-);
 
 const PROJECTS_SECTION_INDEX = 4;
 
@@ -103,9 +97,7 @@ export default function HeroSection() {
 
   return (
     <section ref={sectionRef} className={styles.section} aria-label="Hero">
-      <div className={styles.bgLayer}>
-        <HeroBackground />
-      </div>
+      <div className={styles.bgLayer} aria-hidden />
       <div className={styles.vignette} aria-hidden />
 
       <div className={styles.grid}>

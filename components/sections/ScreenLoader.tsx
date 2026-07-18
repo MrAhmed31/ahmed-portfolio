@@ -34,31 +34,31 @@ export default function ScreenLoader({ onDismiss }: ScreenLoaderProps) {
 
     tl.to(contentRef.current, {
       opacity: 0,
-      scale: 0.96,
-      duration: 0.45,
+      scale: 0.97,
+      duration: 0.28,
     })
       .to(
         centerLineRef.current,
         {
           scaleX: 0,
           opacity: 0,
-          duration: 0.35,
+          duration: 0.22,
         },
-        "-=0.2",
+        "-=0.12",
       )
       .to(
         panelTopRef.current,
         {
           yPercent: -100,
-          duration: 0.85,
+          duration: 0.55,
         },
-        "-=0.1",
+        "-=0.05",
       )
       .to(
         panelBottomRef.current,
         {
           yPercent: 100,
-          duration: 0.85,
+          duration: 0.55,
         },
         "<",
       )
@@ -66,9 +66,9 @@ export default function ScreenLoader({ onDismiss }: ScreenLoaderProps) {
         overlayRef.current,
         {
           opacity: 0,
-          duration: 0.3,
+          duration: 0.2,
         },
-        "-=0.15",
+        "-=0.1",
       );
   }, [dismissing, onDismiss]);
 

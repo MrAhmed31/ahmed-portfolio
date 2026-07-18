@@ -47,15 +47,17 @@ export default function Home() {
   const [readySections, setReadySections] = useState(false);
 
   useEffect(() => {
+    let idleTimer = 0;
     function unlock() {
-      setReadySections(true);
+      // Defer heavy sections so intro video stays smooth
+      idleTimer = window.setTimeout(() => setReadySections(true), 450);
     }
     window.addEventListener("loader-animation-done", unlock);
-    // Failsafe if loader skipped
-    const id = window.setTimeout(unlock, 8000);
+    const id = window.setTimeout(unlock, 5000);
     return () => {
       window.removeEventListener("loader-animation-done", unlock);
       window.clearTimeout(id);
+      window.clearTimeout(idleTimer);
     };
   }, []);
 
@@ -68,19 +70,19 @@ export default function Home() {
       tweenRef.current?.kill();
       gsap.to(loopOverlayRef.current, {
         opacity: 1,
-        duration: 0.4,
+        duration: 0.28,
         ease: "power2.in",
         onComplete: () => {
           el!.scrollTop = targetScrollTop;
           idxRef.current = targetIdx;
           gsap.to(loopOverlayRef.current, {
             opacity: 0,
-            duration: 0.5,
+            duration: 0.35,
             ease: "power2.out",
             onComplete: () => {
               window.setTimeout(() => {
                 busyRef.current = false;
-              }, 180);
+              }, 80);
             },
           });
         },
@@ -107,12 +109,12 @@ export default function Home() {
       tweenRef.current?.kill();
       tweenRef.current = gsap.to(el, {
         scrollTop: idx * window.innerHeight,
-        duration: 0.85,
-        ease: "power3.inOut",
+        duration: 0.55,
+        ease: "power2.inOut",
         onComplete: () => {
           window.setTimeout(() => {
             busyRef.current = false;
-          }, 280);
+          }, 100);
         },
       });
     }

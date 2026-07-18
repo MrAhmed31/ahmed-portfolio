@@ -151,15 +151,16 @@ export default function ProjectsSection() {
                   <div className={styles.slideInner}>
                     <motion.div
                       className={styles.imageCard}
-                      whileHover={{ scale: 1.03, y: -6 }}
-                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      transition={{ type: "spring", stiffness: 280, damping: 22 }}
                     >
                       <Image
                         src={project.image}
-                        alt={project.title}
+                        alt={`${project.title} cover`}
                         fill
                         sizes="(max-width: 900px) 100vw, 50vw"
                         priority={index === 0}
+                        unoptimized={project.image.endsWith(".svg")}
                       />
                       <motion.div
                         className={styles.imageGlow}

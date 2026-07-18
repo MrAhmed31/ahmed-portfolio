@@ -5,7 +5,7 @@ export const content = {
   hero: {
     freelanceNote: "Available for freelance & full-time opportunities.",
     availableLabel: "Available for work",
-    pills: ["AI Developer", "Full Stack Developer", "UI/UX Designer", "TypeScript"],
+    pills: ["AI Builder", "Full Stack", "Machine Learning", "Automation"],
   },
   intro: {
     greeting: "Welcome",
@@ -21,8 +21,8 @@ export const content = {
     subtitle: "Frontend, backend, cloud, and AI — composed into reliable delivery.",
   },
   projects: {
-    eyebrow: "Selected Work",
-    title: "Projects",
+    eyebrow: "From GitHub",
+    title: "Real Projects",
   },
   experience: {
     eyebrow: "Career",

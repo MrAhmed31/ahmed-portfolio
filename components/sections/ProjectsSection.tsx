@@ -1,7 +1,8 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FaExternalLinkAlt, FaGithub } from "react-icons/fa";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
@@ -12,6 +13,10 @@ function getMainScroller() {
   return document.querySelector("main");
 }
 
+function hasLiveDemo(live: string, github: string) {
+  return Boolean(live) && live !== github && !live.includes("github.com");
+}
+
 export default function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -19,7 +24,12 @@ export default function ProjectsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  const projectCount = profile.projects.length;
+  const projects = profile.projects;
+  const projectCount = projects.length;
+  const activeProject = useMemo(
+    () => projects[activeIndex] ?? projects[0],
+    [activeIndex, projects],
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -58,8 +68,10 @@ export default function ProjectsSection() {
 
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("resize", refresh);
+    const t = window.setTimeout(refresh, 120);
 
     return () => {
+      window.clearTimeout(t);
       window.removeEventListener("resize", refresh);
       ctx.revert();
     };
@@ -75,23 +87,56 @@ export default function ProjectsSection() {
       <div ref={stickyRef} className={styles.sticky}>
         <header className={styles.header}>
           <div className={styles.headerCopy}>
-            <span className={styles.eyebrow}>{content.projects.eyebrow}</span>
-            <h2 id="projects-title" className={styles.title}>
+            <motion.span
+              className={styles.eyebrow}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              {content.projects.eyebrow}
+            </motion.span>
+            <motion.h2
+              id="projects-title"
+              className={styles.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.05 }}
+            >
               {content.projects.title}
-            </h2>
+            </motion.h2>
+            <motion.a
+              href="https://github.com/MrAhmed31?tab=repositories"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.githubAll}
+              whileHover={{ x: 4 }}
+            >
+              View all on GitHub →
+            </motion.a>
           </div>
 
           <div className={styles.meta}>
-            <div className={styles.counter} aria-live="polite">
-              <span className={styles.counterAccent}>
-                {String(activeIndex + 1).padStart(2, "0")}
-              </span>
-              <span> / {String(projectCount).padStart(2, "0")}</span>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProject.id}
+                className={styles.counter}
+                aria-live="polite"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <span className={styles.counterAccent}>
+                  {String(activeIndex + 1).padStart(2, "0")}
+                </span>
+                <span> / {String(projectCount).padStart(2, "0")}</span>
+              </motion.div>
+            </AnimatePresence>
             <div className={styles.progressTrack} aria-hidden>
-              <div
+              <motion.div
                 className={styles.progressBar}
-                style={{ transform: `scaleX(${progress})` }}
+                style={{ scaleX: progress }}
               />
             </div>
           </div>
@@ -99,56 +144,117 @@ export default function ProjectsSection() {
 
         <div className={styles.trackOuter}>
           <div ref={trackRef} className={styles.track}>
-            {profile.projects.map((project) => (
-              <article key={project.id} className={styles.slide}>
-                <div className={styles.slideInner}>
-                  <div className={styles.imageCard}>
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 900px) 100vw, 50vw"
-                    />
-                  </div>
+            {projects.map((project, index) => {
+              const liveReady = hasLiveDemo(project.live, project.github);
+              return (
+                <article key={project.id} className={styles.slide}>
+                  <div className={styles.slideInner}>
+                    <motion.div
+                      className={styles.imageCard}
+                      whileHover={{ scale: 1.03, y: -6 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    >
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 900px) 100vw, 50vw"
+                        priority={index === 0}
+                      />
+                      <motion.div
+                        className={styles.imageGlow}
+                        animate={
+                          activeIndex === index
+                            ? { opacity: 0.55 }
+                            : { opacity: 0.15 }
+                        }
+                        transition={{ duration: 0.35 }}
+                        aria-hidden
+                      />
+                    </motion.div>
 
-                  <div className={styles.copy}>
-                    <span className={styles.type}>{project.type}</span>
-                    <h3 className={styles.projectTitle}>{project.title}</h3>
-                    <p className={styles.subtitle}>{project.subtitle}</p>
-                    <p className={styles.desc}>{project.desc}</p>
+                    <motion.div
+                      className={styles.copy}
+                      initial={{ opacity: 0, x: 28 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false, amount: 0.45 }}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <span className={styles.type}>{project.type}</span>
+                      <h3 className={styles.projectTitle}>{project.title}</h3>
+                      <p className={styles.subtitle}>{project.subtitle}</p>
+                      <p className={styles.desc}>{project.desc}</p>
 
-                    <div className={styles.tech}>
-                      {project.tech.map((t) => (
-                        <span key={t} className={styles.techTag}>
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className={styles.actions}>
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.btnGhost}
+                      <motion.div
+                        className={styles.tech}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.4 }}
+                        variants={{
+                          hidden: {},
+                          visible: {
+                            transition: { staggerChildren: 0.05 },
+                          },
+                        }}
                       >
-                        <FaGithub size={14} />
-                        GitHub
-                      </a>
-                      <a
-                        href={project.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.btnPrimary}
-                      >
-                        <FaExternalLinkAlt size={12} />
-                        Live Demo
-                      </a>
-                    </div>
+                        {project.tech.map((t) => (
+                          <motion.span
+                            key={t}
+                            className={styles.techTag}
+                            variants={{
+                              hidden: { opacity: 0, y: 10, scale: 0.96 },
+                              visible: { opacity: 1, y: 0, scale: 1 },
+                            }}
+                            whileHover={{ y: -3, scale: 1.05 }}
+                          >
+                            {t}
+                          </motion.span>
+                        ))}
+                      </motion.div>
+
+                      <div className={styles.actions}>
+                        <motion.a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.btnGhost}
+                          whileHover={{ y: -3, scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
+                        >
+                          <FaGithub size={14} />
+                          GitHub
+                        </motion.a>
+                        {liveReady ? (
+                          <motion.a
+                            href={project.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.btnPrimary}
+                            whileHover={{ y: -3, scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                          >
+                            <FaExternalLinkAlt size={12} />
+                            Live Demo
+                          </motion.a>
+                        ) : (
+                          <motion.a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.btnPrimary}
+                            whileHover={{ y: -3, scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                          >
+                            <FaExternalLinkAlt size={12} />
+                            View Repo
+                          </motion.a>
+                        )}
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>

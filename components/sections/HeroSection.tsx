@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
@@ -132,50 +133,63 @@ export default function HeroSection() {
 
           <div className={styles.pills}>
             {content.hero.pills.map((pill) => (
-              <span key={pill} className={styles.pill} data-hero="pill">
+              <motion.span
+                key={pill}
+                className={styles.pill}
+                data-hero="pill"
+                whileHover={{ y: -3, scale: 1.04 }}
+              >
                 {pill}
-              </span>
+              </motion.span>
             ))}
           </div>
 
           <div className={styles.actions} data-hero="actions">
-            <button
+            <motion.button
               type="button"
               className={styles.ctaPrimary}
               onClick={scrollToProjects}
+              whileHover={{ y: -3, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               View Projects
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               className={styles.ctaGhost}
               onClick={scrollToContact}
+              whileHover={{ y: -3, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               Get in Touch
-            </button>
+            </motion.button>
 
             <div className={styles.socials}>
               {github && (
-                <a
+                <motion.a
                   href={github.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.socialLink}
                   aria-label="GitHub"
+                  whileHover={{ y: -3, scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <FaGithub size={18} />
-                </a>
+                </motion.a>
               )}
               {linkedin && (
-                <a
+                <motion.a
                   href={linkedin.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.socialLink}
                   aria-label="LinkedIn"
+                  whileHover={{ y: -3, scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <FaLinkedin size={18} />
-                </a>
+                </motion.a>
               )}
             </div>
           </div>

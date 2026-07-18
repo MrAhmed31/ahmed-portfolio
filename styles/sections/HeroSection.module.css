@@ -298,3 +298,22 @@
   font-size: 0.8rem;
   color: color-mix(in oklab, var(--text-primary, #f8fafc) 50%, transparent);
 }
+
+@media (max-width: 767px) {
+  .section {
+    padding: 5.5rem 1.1rem 2.5rem;
+    align-items: flex-start;
+  }
+
+  .stats {
+    gap: 0.45rem;
+  }
+
+  .statCard {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+}

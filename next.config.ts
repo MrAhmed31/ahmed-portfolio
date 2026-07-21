@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     imageSizes: [64, 128, 256, 384],
   },
   experimental: {
-    optimizePackageImports: ["react-icons", "framer-motion"],
+    optimizePackageImports: ["react-icons", "framer-motion", "gsap"],
   },
 };
 

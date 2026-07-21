@@ -7,65 +7,67 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
 import { gsap } from "@/lib/gsap";
+import { scrollToSection } from "@/lib/scroll";
 import styles from "@/styles/sections/HeroSection.module.css";
 
 const PROJECTS_SECTION_INDEX = 4;
 const CONTACT_SECTION_INDEX = 6;
 
-function getMainScroller() {
-  return document.querySelector("main");
-}
-
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReduced) return;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
-        delay: 0.15,
+        delay: 0.1,
       });
 
-      tl.from("[data-hero='eyebrow']", { opacity: 0, y: 20, duration: 0.6 })
+      tl.from("[data-hero='eyebrow']", { opacity: 0, y: 16, duration: 0.45 })
         .from(
           "[data-hero='first']",
-          { opacity: 0, y: 48, duration: 0.8 },
-          "-=0.35",
+          { opacity: 0, y: 32, duration: 0.55 },
+          "-=0.28",
         )
         .from(
           "[data-hero='last']",
-          { opacity: 0, y: 48, duration: 0.8 },
-          "-=0.65",
-        )
-        .from(
-          "[data-hero='role']",
-          { opacity: 0, y: 24, duration: 0.6 },
+          { opacity: 0, y: 32, duration: 0.55 },
           "-=0.45",
         )
         .from(
+          "[data-hero='role']",
+          { opacity: 0, y: 16, duration: 0.4 },
+          "-=0.3",
+        )
+        .from(
           "[data-hero='tagline']",
-          { opacity: 0, y: 20, duration: 0.6 },
-          "-=0.4",
+          { opacity: 0, y: 14, duration: 0.4 },
+          "-=0.28",
         )
         .from(
           "[data-hero='pill']",
-          { opacity: 0, y: 16, stagger: 0.08, duration: 0.5 },
-          "-=0.35",
+          { opacity: 0, y: 12, stagger: 0.06, duration: 0.35 },
+          "-=0.22",
         )
         .from(
           "[data-hero='actions']",
-          { opacity: 0, y: 20, duration: 0.6 },
-          "-=0.25",
+          { opacity: 0, y: 14, duration: 0.4 },
+          "-=0.18",
         )
         .from(
           "[data-hero='image']",
-          { opacity: 0, scale: 0.92, duration: 0.9 },
-          "-=0.7",
+          { opacity: 0, scale: 0.96, duration: 0.55 },
+          "-=0.45",
         )
         .from(
           "[data-hero='stat']",
-          { opacity: 0, y: 20, stagger: 0.1, duration: 0.5 },
-          "-=0.5",
+          { opacity: 0, y: 14, stagger: 0.08, duration: 0.35 },
+          "-=0.3",
         );
     }, sectionRef);
 
@@ -73,23 +75,11 @@ export default function HeroSection() {
   }, []);
 
   const scrollToProjects = useCallback(() => {
-    const main = getMainScroller();
-    if (!main) return;
-    gsap.to(main, {
-      scrollTop: PROJECTS_SECTION_INDEX * window.innerHeight,
-      duration: 1,
-      ease: "power2.inOut",
-    });
+    scrollToSection(PROJECTS_SECTION_INDEX, { duration: 0.75 });
   }, []);
 
   const scrollToContact = useCallback(() => {
-    const main = getMainScroller();
-    if (!main) return;
-    gsap.to(main, {
-      scrollTop: CONTACT_SECTION_INDEX * window.innerHeight,
-      duration: 1,
-      ease: "power2.inOut",
-    });
+    scrollToSection(CONTACT_SECTION_INDEX, { duration: 0.75 });
   }, []);
 
   const github = profile.socials.find((s) => s.label === "GitHub");

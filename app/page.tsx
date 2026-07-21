@@ -7,33 +7,35 @@ import VideoIntro from "@/components/sections/VideoIntro";
 import Navbar from "@/components/ui/Navbar";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import { gsap } from "@/lib/gsap";
+import {
+  getActiveSectionIndex,
+  getSectionPanels,
+  jumpToSection,
+} from "@/lib/scroll";
 
 const HeroSection = dynamic(() => import("@/components/sections/HeroSection"), {
-  ssr: false,
-  loading: () => <div style={{ minHeight: "100vh" }} />,
+  loading: () => <div style={{ minHeight: "100svh" }} aria-hidden />,
 });
 const AboutSection = dynamic(
   () => import("@/components/sections/AboutSection"),
-  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+  { loading: () => <div style={{ minHeight: "100svh" }} aria-hidden /> },
 );
 const SkillsSection = dynamic(
   () => import("@/components/sections/SkillsSection"),
-  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+  { loading: () => <div style={{ minHeight: "100svh" }} aria-hidden /> },
 );
 const ProjectsSection = dynamic(
   () => import("@/components/sections/ProjectsSection"),
-  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+  { loading: () => <div style={{ minHeight: "100svh" }} aria-hidden /> },
 );
 const WorkExperienceSection = dynamic(
   () => import("@/components/sections/WorkExperienceSection"),
-  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+  { loading: () => <div style={{ minHeight: "100svh" }} aria-hidden /> },
 );
 const ContactSection = dynamic(
   () => import("@/components/sections/ContactSection"),
-  { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
+  { loading: () => <div style={{ minHeight: "100svh" }} aria-hidden /> },
 );
-
-const TOTAL = 7; // intro, hero, about, skills, projects, experience, contact
 
 export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
@@ -47,11 +49,10 @@ export default function Home() {
   useEffect(() => {
     let idleTimer = 0;
     function unlock() {
-      // Defer heavy sections so intro video stays smooth
-      idleTimer = window.setTimeout(() => setReadySections(true), 450);
+      idleTimer = window.setTimeout(() => setReadySections(true), 120);
     }
     window.addEventListener("loader-animation-done", unlock);
-    const id = window.setTimeout(unlock, 5000);
+    const id = window.setTimeout(unlock, 2800);
     return () => {
       window.removeEventListener("loader-animation-done", unlock);
       window.clearTimeout(id);
@@ -63,24 +64,24 @@ export default function Home() {
     const el = mainRef.current;
     if (!el) return;
 
-    function fadeLoop(targetScrollTop: number, targetIdx: number) {
+    function fadeLoop(targetIdx: number) {
       busyRef.current = true;
       tweenRef.current?.kill();
       gsap.to(loopOverlayRef.current, {
         opacity: 1,
-        duration: 0.28,
+        duration: 0.22,
         ease: "power2.in",
         onComplete: () => {
-          el!.scrollTop = targetScrollTop;
+          jumpToSection(targetIdx);
           idxRef.current = targetIdx;
           gsap.to(loopOverlayRef.current, {
             opacity: 0,
-            duration: 0.35,
+            duration: 0.28,
             ease: "power2.out",
             onComplete: () => {
               window.setTimeout(() => {
                 busyRef.current = false;
-              }, 80);
+              }, 60);
             },
           });
         },
@@ -88,42 +89,47 @@ export default function Home() {
     }
 
     function goTo(idx: number) {
-      if (idx >= TOTAL) idx = 0;
-      if (idx < 0) idx = TOTAL - 1;
+      const panels = getSectionPanels(el!);
+      const total = panels.length;
+      if (!total) return;
+
+      if (idx >= total) idx = 0;
+      if (idx < 0) idx = total - 1;
       if (idx === idxRef.current || busyRef.current) return;
 
-      if (idxRef.current === TOTAL - 1 && idx === 0) {
-        fadeLoop(0, 0);
+      if (idxRef.current === total - 1 && idx === 0) {
+        fadeLoop(0);
         return;
       }
 
-      if (idxRef.current === 0 && idx === TOTAL - 1) {
-        fadeLoop((TOTAL - 1) * window.innerHeight, TOTAL - 1);
+      if (idxRef.current === 0 && idx === total - 1) {
+        fadeLoop(total - 1);
         return;
       }
 
+      const target = panels[idx];
       idxRef.current = idx;
       busyRef.current = true;
       tweenRef.current?.kill();
       tweenRef.current = gsap.to(el, {
-        scrollTop: idx * window.innerHeight,
-        duration: 0.55,
+        scrollTop: target.offsetTop,
+        duration: 0.5,
         ease: "power2.inOut",
         onComplete: () => {
           window.setTimeout(() => {
             busyRef.current = false;
-          }, 100);
+          }, 80);
         },
       });
     }
 
     function onScroll() {
-      idxRef.current = Math.round(el!.scrollTop / window.innerHeight);
+      idxRef.current = getActiveSectionIndex(el!);
     }
 
     function onFooterLoop() {
       if (busyRef.current) return;
-      fadeLoop(0, 0);
+      fadeLoop(0);
     }
 
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
@@ -133,6 +139,9 @@ export default function Home() {
 
     if (!isMobile) {
       function onWheel(e: WheelEvent) {
+        const target = e.target as HTMLElement | null;
+        if (target?.closest("[data-carousel-root]")) return;
+
         e.preventDefault();
         if (busyRef.current) return;
         goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
@@ -143,6 +152,8 @@ export default function Home() {
         touchY = e.touches[0].clientY;
       }
       function onTouchEnd(e: TouchEvent) {
+        const target = e.target as HTMLElement | null;
+        if (target?.closest("[data-carousel-root]")) return;
         const dy = touchY - e.changedTouches[0].clientY;
         if (Math.abs(dy) < 40 || busyRef.current) return;
         goTo(idxRef.current + (dy > 0 ? 1 : -1));
@@ -162,7 +173,6 @@ export default function Home() {
       };
     }
 
-    // Mobile: native scroll for better responsiveness
     let mTouchY = 0;
     function onMobileTouchStart(e: TouchEvent) {
       mTouchY = e.touches[0].clientY;
@@ -172,9 +182,10 @@ export default function Home() {
       if (Math.abs(dy) < 40) return;
       const atBottom = el!.scrollTop + el!.clientHeight >= el!.scrollHeight - 8;
       const atTop = el!.scrollTop < 8;
-      if (dy > 0 && atBottom) fadeLoop(0, 0);
+      if (dy > 0 && atBottom) fadeLoop(0);
       if (dy < 0 && atTop) {
-        fadeLoop(el!.scrollHeight - el!.clientHeight, TOTAL - 1);
+        const panels = getSectionPanels(el!);
+        fadeLoop(Math.max(0, panels.length - 1));
       }
     }
 
@@ -188,7 +199,7 @@ export default function Home() {
       window.removeEventListener("footer-loop-back", onFooterLoop);
       tweenRef.current?.kill();
     };
-  }, []);
+  }, [readySections]);
 
   return (
     <>
@@ -206,7 +217,7 @@ export default function Home() {
       <main
         ref={mainRef}
         className="h-dvh overflow-y-auto overscroll-none"
-        style={{ height: "100vh" }}
+        style={{ height: "100svh" }}
       >
         <VideoIntro />
         {readySections && (

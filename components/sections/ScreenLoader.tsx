@@ -16,6 +16,15 @@ export default function ScreenLoader({ onDismiss }: ScreenLoaderProps) {
   const centerLineRef = useRef<HTMLDivElement>(null);
   const [dismissing, setDismissing] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const doneRef = useRef(false);
+
+  const finish = useCallback(() => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    window.dispatchEvent(new CustomEvent("loader-animation-done"));
+    setHidden(true);
+    onDismiss?.();
+  }, [onDismiss]);
 
   const handleStart = useCallback(() => {
     if (dismissing) return;
@@ -25,12 +34,11 @@ export default function ScreenLoader({ onDismiss }: ScreenLoaderProps) {
 
     const tl = gsap.timeline({
       defaults: { ease: "power4.inOut" },
-      onComplete: () => {
-        window.dispatchEvent(new CustomEvent("loader-animation-done"));
-        setHidden(true);
-        onDismiss?.();
-      },
+      onComplete: finish,
     });
+
+    // Safety: never leave user stuck on "Entering…"
+    window.setTimeout(finish, 1400);
 
     tl.to(contentRef.current, {
       opacity: 0,
@@ -70,7 +78,7 @@ export default function ScreenLoader({ onDismiss }: ScreenLoaderProps) {
         },
         "-=0.1",
       );
-  }, [dismissing, onDismiss]);
+  }, [dismissing, finish]);
 
   if (hidden) return null;
 

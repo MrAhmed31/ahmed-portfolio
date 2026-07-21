@@ -236,15 +236,16 @@ export default function ProjectsSection() {
       <div
         className="overflow-hidden"
         ref={emblaRef}
+        data-carousel-root
         role="region"
         aria-roledescription="carousel"
         aria-label="Featured projects"
       >
-        <div className="flex touch-pan-y gap-4 md:gap-6">
+        <div className="flex touch-pan-y">
           {projects.map((project) => (
             <div
               key={project.id}
-              className="min-w-0 shrink-0 grow-0 basis-[88%] sm:basis-[70%] md:basis-[48%] lg:basis-[40%]"
+              className="min-w-0 shrink-0 grow-0 basis-[88%] pl-0 pr-4 sm:basis-[70%] md:basis-[48%] md:pr-6 lg:basis-[40%]"
               role="group"
               aria-roledescription="slide"
               aria-label={project.title}

@@ -6,17 +6,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { gsap } from "@/lib/gsap";
+import { scrollToSection } from "@/lib/scroll";
 import styles from "@/styles/sections/VideoIntro.module.css";
 
 function scrollNext() {
-  const main = document.querySelector("main");
-  if (!main) return;
-  gsap.to(main, {
-    scrollTop: window.innerHeight,
-    duration: 0.65,
-    ease: "power2.inOut",
-  });
+  scrollToSection(1, { duration: 0.55 });
 }
 
 function forceSoundOn(video: HTMLVideoElement) {
@@ -155,11 +149,12 @@ export default function VideoIntro() {
         <video
           key={videoSrc}
           ref={videoRef}
-          src={videoSrc}
+          src={started ? videoSrc : undefined}
           playsInline
           loop
-          autoPlay
-          preload="auto"
+          autoPlay={started}
+          muted={!started}
+          preload={started ? "metadata" : "none"}
           poster="/assets/intro-poster.jpg"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
@@ -232,11 +227,11 @@ export default function VideoIntro() {
         </motion.button>
       )}
 
-      {hasVideo && (
+      {hasVideo && started && (
         <motion.div
           className={styles.controls}
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={started ? { opacity: 1, y: 0 } : { opacity: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.35 }}
         >
           <button

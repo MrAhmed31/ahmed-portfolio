@@ -11,12 +11,8 @@ import {
 } from "react-icons/fa";
 import { content } from "@/data/content";
 import { profile } from "@/data/profile";
-import { gsap } from "@/lib/gsap";
+import { scrollToSection } from "@/lib/scroll";
 import styles from "@/styles/sections/ContactSection.module.css";
-
-function getMainScroller() {
-  return document.querySelector("main");
-}
 
 export default function ContactSection() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -40,16 +36,7 @@ export default function ContactSection() {
   };
 
   const scrollToTop = useCallback(() => {
-    const main = getMainScroller();
-    if (!main) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    gsap.to(main, {
-      scrollTop: 0,
-      duration: 1,
-      ease: "power2.inOut",
-    });
+    scrollToSection(0, { duration: 0.75 });
   }, []);
 
   const year = new Date().getFullYear();

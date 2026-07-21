@@ -2,7 +2,7 @@
 
 import { useThemeContext } from "@/components/providers/ThemeProvider";
 import { profile } from "@/data/profile";
-import { gsap } from "@/lib/gsap";
+import { getActiveSectionIndex, scrollToSection } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -28,10 +28,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Contact", idx: 6 },
 ];
 
-function getMainScroller() {
-  return document.querySelector("main");
-}
-
 export default function Navbar() {
   const { theme, toggleTheme, ready } = useThemeContext();
   const [visible, setVisible] = useState(true);
@@ -39,40 +35,41 @@ export default function Navbar() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastYRef = useRef(0);
+  const rafRef = useRef(0);
 
   const goTo = useCallback((idx: number) => {
-    const main = getMainScroller();
-    if (!main) return;
-    gsap.to(main, {
-      scrollTop: idx * window.innerHeight,
-      duration: 0.7,
-      ease: "power2.inOut",
-    });
+    scrollToSection(idx, { duration: 0.65 });
     setMobileOpen(false);
   }, []);
 
   useEffect(() => {
-    const main = getMainScroller();
+    const main = document.querySelector("main");
     if (!main) return;
 
     const onScroll = () => {
-      const y = main.scrollTop;
-      const vh = window.innerHeight || 1;
-      setScrolled(y > 16);
-      setActiveIdx(Math.round(y / vh));
-      if (y < 24) {
-        setVisible(true);
-      } else if (y > lastYRef.current + 10) {
-        setVisible(false);
-      } else if (y < lastYRef.current - 10) {
-        setVisible(true);
-      }
-      lastYRef.current = y;
+      if (rafRef.current) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = 0;
+        const y = main.scrollTop;
+        setScrolled(y > 16);
+        setActiveIdx(getActiveSectionIndex(main as HTMLElement));
+        if (y < 24) {
+          setVisible(true);
+        } else if (y > lastYRef.current + 12) {
+          setVisible(false);
+        } else if (y < lastYRef.current - 12) {
+          setVisible(true);
+        }
+        lastYRef.current = y;
+      });
     };
 
     main.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => main.removeEventListener("scroll", onScroll);
+    return () => {
+      main.removeEventListener("scroll", onScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -82,15 +79,13 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  const activeLabel = useMemo(
-    () =>
-      NAV_ITEMS.reduce((best, item) =>
-        Math.abs(item.idx - activeIdx) < Math.abs(best.idx - activeIdx)
-          ? item
-          : best,
-      ).label,
-    [activeIdx],
-  );
+  const activeLabel = useMemo(() => {
+    // Hero (1) should highlight Home
+    const mapped = activeIdx === 1 ? 0 : activeIdx;
+    return NAV_ITEMS.reduce((best, item) =>
+      Math.abs(item.idx - mapped) < Math.abs(best.idx - mapped) ? item : best,
+    ).label;
+  }, [activeIdx]);
 
   return (
     <>

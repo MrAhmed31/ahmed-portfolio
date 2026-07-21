@@ -1,65 +1,92 @@
 @import "tailwindcss";
 
-/* Theme derived from intro video: charcoal desk + amber lamps + cyan monitors */
+/* FAANG-grade design system — blue / violet / cyan on deep navy */
 :root {
-  --hero-start: #0a0a0b;
-  --hero-mid: #16120e;
-  --hero-end: #1a1410;
-  --accent: #f5a623;
-  --accent-2: #38bdf8;
-  --accent-hover: #e09010;
-  --text-primary: #f3f0ea;
-  --text-muted: #b8aea0;
-  --text-on-dark: #faf7f2;
-  --surface-white: #f7f3ec;
-  --surface-black: #0a0a0b;
-  --surface-card: rgba(22, 18, 14, 0.72);
-  --status-available: #4ade80;
-  --navbar-text: #f3f0ea;
-  --email-btn-bg: #f5a623;
-  --email-btn-text: #0a0a0b;
-  --background: #0a0a0b;
-  --foreground: #f3f0ea;
-  --border-glass: rgba(245, 166, 35, 0.18);
-  --glow-warm: rgba(245, 166, 35, 0.28);
-  --glow-cool: rgba(56, 189, 248, 0.22);
-  --hero-name-size: clamp(3.2rem, 11vw, 9.5rem);
-  --text-body: clamp(0.9rem, 1.2vw, 1.05rem);
-  --text-small: 0.72rem;
+  --primary: #3b82f6;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+  --accent-2: #3b82f6;
+  --accent-hover: #2563eb;
+  --background: #0b1120;
+  --surface: #111827;
+  --surface-2: #1f2937;
+  --surface-card: rgba(31, 41, 55, 0.72);
+  --text-primary: #f9fafb;
+  --text-muted: #9ca3af;
+  --text-on-dark: #f9fafb;
+  --success: #10b981;
+  --hover-glow: rgba(59, 130, 246, 0.25);
+  --border-glass: rgba(148, 163, 184, 0.16);
+  --hero-start: #0b1120;
+  --hero-mid: #111827;
+  --hero-end: #1e293b;
+  --surface-black: #0b1120;
+  --surface-white: #f9fafb;
+  --navbar-text: #f9fafb;
+  --email-btn-bg: #3b82f6;
+  --email-btn-text: #f9fafb;
+  --status-available: #10b981;
+  --glow-warm: rgba(139, 92, 246, 0.22);
+  --glow-cool: rgba(6, 182, 212, 0.2);
+  --foreground: #f9fafb;
   --radius: 1rem;
+  --radius-lg: 1.25rem;
+  --container: 80rem; /* 1280px */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+  --space-7: 5rem;
+  --space-8: 6rem;
+  --hero-name-size: clamp(2.75rem, 8vw, 5.5rem);
+  --text-body: 1.05rem;
+  --text-small: 0.8125rem;
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --hero-start: #f7f3ec;
-  --hero-mid: #efe6d8;
-  --hero-end: #e8dcc8;
-  --accent: #c47a0a;
-  --accent-2: #0284c7;
-  --accent-hover: #a36608;
-  --text-primary: #171412;
-  --text-muted: #5c534a;
-  --text-on-dark: #faf7f2;
+  --primary: #2563eb;
+  --secondary: #7c3aed;
+  --accent: #0891b2;
+  --accent-2: #2563eb;
+  --accent-hover: #1d4ed8;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-card: rgba(255, 255, 255, 0.86);
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --text-on-dark: #f9fafb;
+  --hover-glow: rgba(37, 99, 235, 0.18);
+  --border-glass: rgba(15, 23, 42, 0.1);
+  --hero-start: #f8fafc;
+  --hero-mid: #eff6ff;
+  --hero-end: #e0e7ff;
+  --surface-black: #f1f5f9;
   --surface-white: #ffffff;
-  --surface-black: #efe9df;
-  --surface-card: rgba(255, 255, 255, 0.78);
-  --navbar-text: #171412;
-  --email-btn-bg: #171412;
-  --email-btn-text: #faf7f2;
-  --background: #f7f3ec;
-  --foreground: #171412;
-  --border-glass: rgba(23, 20, 18, 0.12);
-  --glow-warm: rgba(196, 122, 10, 0.18);
-  --glow-cool: rgba(2, 132, 199, 0.14);
+  --navbar-text: #0f172a;
+  --email-btn-bg: #2563eb;
+  --email-btn-text: #ffffff;
+  --foreground: #0f172a;
+  --glow-warm: rgba(124, 58, 237, 0.14);
+  --glow-cool: rgba(8, 145, 178, 0.14);
   color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-syne);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-instrument);
+  --font-display: var(--font-jakarta);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html,
@@ -71,7 +98,9 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -87,7 +116,7 @@ main {
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--accent) 45%, transparent);
+  background: color-mix(in oklab, var(--primary) 45%, transparent);
   color: var(--text-on-dark);
 }
 
@@ -102,6 +131,11 @@ video {
   height: auto;
 }
 
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 @media (hover: none) {
   a,
   button {
@@ -111,7 +145,7 @@ video {
 
 @media (max-width: 767px) {
   :root {
-    --hero-name-size: clamp(2.4rem, 13vw, 4.2rem);
+    --hero-name-size: clamp(2.25rem, 11vw, 3.5rem);
   }
 
   html,

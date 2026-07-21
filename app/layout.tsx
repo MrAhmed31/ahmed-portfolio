@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { Geist_Mono, Instrument_Serif, Syne } from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Cursor from "@/components/ui/Cursor";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import {
@@ -12,17 +12,10 @@ import {
 import { profile } from "@/data/profile";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-});
-
-const instrument = Instrument_Serif({
-  variable: "--font-instrument",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
 });
 
 const geistMono = Geist_Mono({
@@ -93,7 +86,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1120" },
     { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
   ],
   width: "device-width",
@@ -108,7 +101,9 @@ const jsonLd = {
   email: profile.email,
   jobTitle: profile.roles.short,
   image: `${SITE_URL}${profile.image}`,
-  sameAs: profile.socials.map((s) => s.href).filter((h) => !h.startsWith("mailto:")),
+  sameAs: profile.socials
+    .map((s) => s.href)
+    .filter((h) => !h.startsWith("mailto:")),
   description: SITE_DESCRIPTION,
 };
 
@@ -121,7 +116,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${syne.variable} ${instrument.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground">

@@ -6,7 +6,6 @@ import ScreenLoader from "@/components/sections/ScreenLoader";
 import VideoIntro from "@/components/sections/VideoIntro";
 import Navbar from "@/components/ui/Navbar";
 import ScrollProgress from "@/components/ui/ScrollProgress";
-import { profile } from "@/data/profile";
 import { gsap } from "@/lib/gsap";
 
 const HeroSection = dynamic(() => import("@/components/sections/HeroSection"), {
@@ -34,8 +33,7 @@ const ContactSection = dynamic(
   { ssr: false, loading: () => <div style={{ minHeight: "100vh" }} /> },
 );
 
-const PROJECT_SLIDES = profile.projects.length;
-const TOTAL = 6 + PROJECT_SLIDES;
+const TOTAL = 7; // intro, hero, about, skills, projects, experience, contact
 
 export default function Home() {
   const mainRef = useRef<HTMLElement>(null);

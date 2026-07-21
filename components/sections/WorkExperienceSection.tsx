@@ -13,9 +13,9 @@ export default function WorkExperienceSection() {
     const ctx = gsap.context(() => {
       gsap.from("[data-exp='header']", {
         opacity: 0,
-        y: 32,
-        duration: 0.8,
-        ease: "power3.out",
+        y: 28,
+        duration: 0.75,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: sectionRef.current,
           scroller: document.querySelector("main") ?? undefined,
@@ -26,10 +26,10 @@ export default function WorkExperienceSection() {
 
       gsap.from("[data-exp='item']", {
         opacity: 0,
-        x: -24,
-        stagger: 0.12,
-        duration: 0.7,
-        ease: "power3.out",
+        x: -20,
+        stagger: 0.14,
+        duration: 0.65,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: "[data-exp='timeline']",
           scroller: document.querySelector("main") ?? undefined,

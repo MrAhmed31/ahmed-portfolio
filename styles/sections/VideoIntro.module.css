@@ -141,7 +141,7 @@
   text-transform: uppercase;
   user-select: none;
   background: rgba(10, 10, 11, 0.4);
-  border: 1px solid rgba(245, 166, 35, 0.35);
+  border: 1px solid color-mix(in oklab, var(--primary) 35%, transparent);
   border-radius: 999px;
   backdrop-filter: blur(10px);
   cursor: pointer;
@@ -208,8 +208,8 @@
 }
 
 .ctrlBtn:hover {
-  background: rgba(245, 166, 35, 0.2);
-  border-color: rgba(245, 166, 35, 0.55);
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
   color: #fff;
   transform: translateY(-2px);
 }

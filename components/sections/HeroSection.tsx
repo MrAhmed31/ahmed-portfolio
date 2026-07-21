@@ -10,6 +10,7 @@ import { gsap } from "@/lib/gsap";
 import styles from "@/styles/sections/HeroSection.module.css";
 
 const PROJECTS_SECTION_INDEX = 4;
+const CONTACT_SECTION_INDEX = 6;
 
 function getMainScroller() {
   return document.querySelector("main");
@@ -76,19 +77,18 @@ export default function HeroSection() {
     if (!main) return;
     gsap.to(main, {
       scrollTop: PROJECTS_SECTION_INDEX * window.innerHeight,
-      duration: 1.4,
-      ease: "power3.inOut",
+      duration: 1,
+      ease: "power2.inOut",
     });
   }, []);
 
   const scrollToContact = useCallback(() => {
     const main = getMainScroller();
     if (!main) return;
-    const contactIndex = 5 + profile.projects.length;
     gsap.to(main, {
-      scrollTop: contactIndex * window.innerHeight,
-      duration: 1.4,
-      ease: "power3.inOut",
+      scrollTop: CONTACT_SECTION_INDEX * window.innerHeight,
+      duration: 1,
+      ease: "power2.inOut",
     });
   }, []);
 

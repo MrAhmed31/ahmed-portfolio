@@ -1,29 +1,35 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  FaEnvelope,
-  FaMoon,
-  FaSun,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
 import { useThemeContext } from "@/components/providers/ThemeProvider";
 import { profile } from "@/data/profile";
 import { gsap } from "@/lib/gsap";
-import styles from "@/styles/ui/Navbar.module.css";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FaBars,
+  FaEnvelope,
+  FaMoon,
+  FaSun,
+  FaTimes,
+} from "react-icons/fa";
 
 type NavItem = {
   label: string;
   idx: number;
 };
 
+const NAV_ITEMS: NavItem[] = [
+  { label: "Home", idx: 0 },
+  { label: "About", idx: 2 },
+  { label: "Skills", idx: 3 },
+  { label: "Projects", idx: 4 },
+  { label: "Experience", idx: 5 },
+  { label: "Contact", idx: 6 },
+];
+
 function getMainScroller() {
   return document.querySelector("main");
-}
-
-function getSectionIndexFromScroll(scrollTop: number, vh: number) {
-  return Math.round(scrollTop / vh);
 }
 
 export default function Navbar() {
@@ -32,30 +38,15 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [clock, setClock] = useState("");
-  const lastScrollRef = useRef(0);
-
-  const projectCount = profile.projects.length;
-
-  const navItems: NavItem[] = useMemo(
-    () => [
-      { label: "Home", idx: 0 },
-      { label: "About", idx: 2 },
-      { label: "Skills", idx: 3 },
-      { label: "Projects", idx: 4 },
-      { label: "Experience", idx: 4 + projectCount },
-      { label: "Contact", idx: 5 + projectCount },
-    ],
-    [projectCount],
-  );
+  const lastYRef = useRef(0);
 
   const goTo = useCallback((idx: number) => {
     const main = getMainScroller();
     if (!main) return;
     gsap.to(main, {
       scrollTop: idx * window.innerHeight,
-      duration: 1.2,
-      ease: "power3.inOut",
+      duration: 0.7,
+      ease: "power2.inOut",
     });
     setMobileOpen(false);
   }, []);
@@ -65,41 +56,23 @@ export default function Navbar() {
     if (!main) return;
 
     const onScroll = () => {
-      const current = main.scrollTop;
-      const vh = window.innerHeight;
-
-      setScrolled(current > 24);
-      setActiveIdx(getSectionIndexFromScroll(current, vh));
-
-      if (current <= 0) {
+      const y = main.scrollTop;
+      const vh = window.innerHeight || 1;
+      setScrolled(y > 16);
+      setActiveIdx(Math.round(y / vh));
+      if (y < 24) {
         setVisible(true);
-      } else if (current > lastScrollRef.current + 8) {
+      } else if (y > lastYRef.current + 10) {
         setVisible(false);
-      } else if (current < lastScrollRef.current - 8) {
+      } else if (y < lastYRef.current - 10) {
         setVisible(true);
       }
-
-      lastScrollRef.current = current;
+      lastYRef.current = y;
     };
 
     main.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => main.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const formatter = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Karachi",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-
-    const tick = () => setClock(formatter.format(new Date()));
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
@@ -109,96 +82,139 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  const isActive = (idx: number) => activeIdx === idx;
+  const activeLabel = useMemo(
+    () =>
+      NAV_ITEMS.reduce((best, item) =>
+        Math.abs(item.idx - activeIdx) < Math.abs(best.idx - activeIdx)
+          ? item
+          : best,
+      ).label,
+    [activeIdx],
+  );
 
   return (
     <>
-      <nav
-        className={`${styles.nav} ${visible ? styles.navVisible : styles.navHidden} ${scrolled ? styles.navScrolled : ""}`}
-        aria-label="Primary"
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: visible ? 0 : -110, opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className={cn(
+          "fixed inset-x-0 top-0 z-[80] transition-shadow duration-300",
+          scrolled &&
+            "shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl bg-[color-mix(in_oklab,var(--background)_72%,transparent)] border-b border-[var(--border-glass)]",
+          !scrolled && "bg-transparent",
+        )}
       >
-        <button
-          type="button"
-          className={styles.brand}
-          onClick={() => goTo(0)}
-          aria-label={`${profile.name.full} — go to home`}
+        <nav
+          className="mx-auto flex h-16 max-w-[var(--container)] items-center justify-between gap-4 px-6 md:h-[4.5rem] md:px-8"
+          aria-label="Primary"
         >
-          <span className={styles.brandName}>{profile.name.full}</span>
-          <span className={styles.brandTag}>{profile.roles.short}</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => goTo(0)}
+            className="text-left text-sm font-bold tracking-tight text-[var(--text-primary)] md:text-base"
+          >
+            {profile.name.first}
+            <span className="text-[var(--primary)]">.</span>
+            {profile.name.last}
+          </button>
 
-        <div className={styles.links}>
-          {navItems.map((item) => (
+          <ul className="hidden items-center gap-1 lg:flex">
+            {NAV_ITEMS.map((item) => {
+              const active = activeLabel === item.label;
+              return (
+                <li key={item.label}>
+                  <button
+                    type="button"
+                    onClick={() => goTo(item.idx)}
+                    className={cn(
+                      "relative rounded-full px-3.5 py-2 text-sm font-medium transition",
+                      active
+                        ? "text-[var(--text-primary)]"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+                    )}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {item.label}
+                    {active ? (
+                      <motion.span
+                        layoutId="nav-indicator"
+                        className="absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full bg-[linear-gradient(90deg,var(--primary),var(--secondary))]"
+                      />
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="flex items-center gap-2">
             <button
-              key={item.label}
               type="button"
-              className={`${styles.navLink} ${isActive(item.idx) ? styles.navLinkActive : ""}`}
-              onClick={() => goTo(item.idx)}
+              onClick={toggleTheme}
+              aria-label={
+                ready && theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-glass)] text-[var(--text-primary)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
-              {item.label}
+              {theme === "dark" ? <FaSun size={14} /> : <FaMoon size={14} />}
             </button>
-          ))}
-        </div>
+            <a
+              href={`mailto:${profile.email}`}
+              className="hidden h-10 items-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--primary),var(--secondary))] px-4 text-xs font-semibold uppercase tracking-wide text-white shadow-[0_8px_24px_var(--hover-glow)] transition hover:-translate-y-0.5 sm:inline-flex"
+            >
+              <FaEnvelope size={12} aria-hidden />
+              Email
+            </a>
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-glass)] text-[var(--text-primary)] lg:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              {mobileOpen ? <FaTimes size={16} /> : <FaBars size={16} />}
+            </button>
+          </div>
+        </nav>
+      </motion.header>
 
-        <div className={styles.actions}>
-          <span className={styles.clock} aria-label="Karachi time">
-            PKT {clock}
-          </span>
-
-          <a
-            href={`mailto:${profile.email}`}
-            className={styles.emailBtn}
+      <AnimatePresence>
+        {mobileOpen ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-[color-mix(in_oklab,var(--background)_88%,transparent)] backdrop-blur-xl lg:hidden"
           >
-            <FaEnvelope size={12} />
-            Email
-          </a>
-
-          <button
-            type="button"
-            className={styles.iconBtn}
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            disabled={!ready}
-          >
-            {theme === "dark" ? <FaSun size={14} /> : <FaMoon size={14} />}
-          </button>
-
-          <button
-            type="button"
-            className={styles.menuBtn}
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={mobileOpen}
-          >
-            <FaBars size={16} />
-          </button>
-        </div>
-      </nav>
-
-      <div
-        className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileMenuOpen : ""}`}
-        aria-hidden={!mobileOpen}
-      >
-        <button
-          type="button"
-          className={`${styles.iconBtn} ${styles.mobileClose}`}
-          onClick={() => setMobileOpen(false)}
-          aria-label="Close menu"
-        >
-          <FaTimes size={16} />
-        </button>
-
-        {navItems.map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            className={styles.mobileLink}
-            onClick={() => goTo(item.idx)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+            <motion.ul
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 16, opacity: 0 }}
+              className="mx-auto flex h-full max-w-[var(--container)] flex-col justify-center gap-2 px-6"
+            >
+              {NAV_ITEMS.map((item, i) => (
+                <motion.li
+                  key={item.label}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 * i }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => goTo(item.idx)}
+                    className="w-full rounded-2xl border border-[var(--border-glass)] bg-[var(--surface)] px-5 py-4 text-left text-lg font-semibold text-[var(--text-primary)]"
+                  >
+                    {item.label}
+                  </button>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
